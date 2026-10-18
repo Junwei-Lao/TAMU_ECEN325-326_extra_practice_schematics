@@ -462,13 +462,13 @@ class InvT(Block):
         px, py = oa['plus']
         sch.path((px, py), (px - 0.4, py), (px - 0.4, py - 0.7))
         sch.ground((px - 0.4, py - 0.7))
-        yfb = yin + 3.6
+        yfb = yin + 4.6
         sch.line((xn, yin), (xn, yfb))
         ea = sch.h(self.za_raw, (xn, yfb))
         xt = ea[0] + 1.5
         sch.line(ea, (xt, yfb))
         sch.dot((xt, yfb))
-        sch.vdown(self.zc_raw, (xt, yfb), 1.6)
+        sch.vdown(self.zc_raw, (xt, yfb), 2.4)
         eb = sch.h(self.zb_raw, (xt + vwidth(self.zc_raw) + 0.6, yfb))
         sch.line((xt, yfb), (xt + vwidth(self.zc_raw) + 0.6, yfb))
         xo = max(oa['out'][0] + 0.7, eb[0] + 0.5)

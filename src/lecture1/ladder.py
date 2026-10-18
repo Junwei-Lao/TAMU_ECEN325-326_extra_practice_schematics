@@ -301,8 +301,11 @@ def merge_shunts_ac(node):
     """AC shunts of a node (rails are AC ground). Plain resistors in parallel are merged
     into one named resistor (R_{12}) so the derivation stays short."""
     zs = [z for z, _ in node.shunts]
-    rs = [z for z in zs if isinstance(z, El) and z.kind == 'R']
-    rest = [z for z in zs if not (isinstance(z, El) and z.kind == 'R')]
+    import re
+    def plain_r(z):  # only ordinary resistors R1, R2, ... are merged (r_d of a diode stays visible)
+        return isinstance(z, El) and z.kind == 'R' and re.fullmatch(r'R\d+', z.name) is not None
+    rs = [z for z in zs if plain_r(z)]
+    rest = [z for z in zs if not plain_r(z)]
     merges = []
     if len(rs) >= 2:
         digits = ''.join(r.name.lstrip('R') for r in rs)

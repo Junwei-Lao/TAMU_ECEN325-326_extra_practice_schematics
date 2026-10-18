@@ -39,12 +39,16 @@ def _el_elem(z):
         return elm.Resistor()
     if k == 'C':
         return elm.Capacitor()
+    if k == 'D':  # anode at the start of the drawing direction unless flipped
+        return elm.Diode().reverse() if getattr(z, 'flip', False) else elm.Diode()
     return elm.Inductor2(loops=3)
 
 
 def _name_val(z, show_values):
     name = _mtext(name_tex(z.name))
-    val = z.value_txt() if show_values else ''
+    val = z.value_txt() if (show_values and z.kind != 'D') else ''
+    if getattr(z, 'inf', False):
+        val = '∞'
     return name, val
 
 

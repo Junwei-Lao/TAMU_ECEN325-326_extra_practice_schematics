@@ -93,11 +93,11 @@ def num_tex(x, n=3):
 
 
 def unit_of(kind):
-    return {'R': r'\Omega', 'C': 'F', 'L': 'H'}[kind]
+    return {'R': r'\Omega', 'C': 'F', 'L': 'H', 'D': ''}[kind]
 
 
 def unit_txt(kind):
-    return {'R': 'Ω', 'C': 'F', 'L': 'H'}[kind]
+    return {'R': 'Ω', 'C': 'F', 'L': 'H', 'D': ''}[kind]
 
 
 def db(x):

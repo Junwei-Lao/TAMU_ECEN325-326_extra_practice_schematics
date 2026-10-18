@@ -45,9 +45,17 @@ class Chain:
         ap, am, beta = b.ab()
         return sp.cancel(sp.together(A * (ap - am) / (1 + A * beta)))
 
-    def draw(self, base, label_outputs=False):
+    def draw(self, base, label_outputs=False, dc_bias=None):
         sch = Sch(True, fontsize=11 + 2 * (len(self.blocks) - 1))  # wide drawings get scaled down
-        sch.source((0, 0))
+        if dc_bias is None:
+            sch.source((0, 0))
+        else:  # DC bias in series with the AC input (v_i on top, V_DC below)
+            import schemdraw.elements as elm
+            from common.units import eng
+            sch.d.add(elm.SourceSin().at((0, -2.4)).up().length(2.4).label('$v_i$', loc='top'))
+            sch.d.add(elm.SourceV().at((0, -4.8)).up().length(2.4).label(
+                f'$V_{{DC}}$\n{eng(dc_bias, "V")}', loc='top'))
+            sch.ground((0, -4.8))
         p = (0.6, 0)
         sch.line((0, 0), p)
         for k, b in enumerate(self.blocks):
