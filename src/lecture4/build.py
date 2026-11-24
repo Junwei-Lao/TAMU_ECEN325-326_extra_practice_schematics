@@ -109,8 +109,10 @@ problems_4e.BUILD = amp_design_build
 SETS = [problems_4a, problems_4b, problems_4c, problems_4d, problems_4e]
 
 
-def build_set(mod, make_pdf=True):
-    odir = os.path.join(OUT, f'{mod.CODE}_{mod.SLUG}')
+def build_set(mod, make_pdf=True, lec=4, subtitle='Lecture 4 (Bipolar Junction Transistors)', card=None,
+              out=OUT, tex=TEX):
+    card = card or pipeline_card
+    odir = os.path.join(out, f'{mod.CODE}_{mod.SLUG}')
     os.makedirs(odir, exist_ok=True)
     probs, sols, summary, errors = [], [], [], []
     last_level = None
@@ -139,15 +141,15 @@ def build_set(mod, make_pdf=True):
         summary.append(f'{pid:6s} {p.level:6s} {line}')
     if errors:
         raise SystemExit('\n'.join(errors))
-    body = (mod.INTRO + '\n' + pipeline_card()
+    body = (mod.INTRO + '\n' + card()
             + '\n\\section*{Problems}\n' + '\n'.join(probs)
             + '\n\\newpage\n\\section*{Solutions}\n'
-            + 'Every solution follows the steps of the Lecture-4 pipeline card.\n' + '\n'.join(sols))
-    gp = f'../../../output/lecture4/{mod.CODE}_{mod.SLUG}/'
-    doc = T.document(mod.TITLE, 'ECEN 325 --- Lecture 4 (Bipolar Junction Transistors) practice set', gp, body)
+            + f'Every solution follows the steps of the Lecture-{lec} pipeline card.\n' + '\n'.join(sols))
+    gp = f'../../../output/lecture{lec}/{mod.CODE}_{mod.SLUG}/'
+    doc = T.document(mod.TITLE, f'ECEN 325 --- {subtitle} practice set', gp, body)
     T.check_balanced(doc, mod.CODE)
-    os.makedirs(TEX, exist_ok=True)
-    tex_path = os.path.join(TEX, f'L4_{mod.CODE}_{mod.SLUG}.tex')
+    os.makedirs(tex, exist_ok=True)
+    tex_path = os.path.join(tex, f'L{lec}_{mod.CODE}_{mod.SLUG}.tex')
     with open(tex_path, 'w', encoding='utf-8') as fh:
         fh.write(doc)
     if make_pdf:

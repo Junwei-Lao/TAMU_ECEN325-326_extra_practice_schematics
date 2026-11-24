@@ -70,9 +70,9 @@ def Rn(x):
 def term_sign(q, role):
     """+1 if the transistor current LEAVES the node at this terminal (flows into the device)."""
     if role == 'c':
-        return 1 if q.kind == 'npn' else -1
+        return 1 if q.s > 0 else -1
     if role == 'e':
-        return -1 if q.kind == 'npn' else 1
+        return -1 if q.s > 0 else 1
     return 0
 
 

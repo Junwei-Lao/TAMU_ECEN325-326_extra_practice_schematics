@@ -50,6 +50,19 @@ src/lecture4/          Lecture 4 generator (bipolar junction transistors)
     problems_4a..4e.py the 18 problems of each set
     build.py           builds everything
     tex/               generated LaTeX + compiled PDF
+src/lecture5/          Lecture 5 generator (MOS field-effect transistors), reuses the lecture-4 circuit model
+    mosnet.py          MOSFET element (square law, k' W/L, W/L labels) for the column-stack circuits
+    dc5.py             DC analysis the slides' way (dividers, one quadratic per transistor, reference chains,
+                       W/L mirrors, KCL) + exact nodal solve with the square law
+    ac5.py             small-signal analysis with the node-impedance method (Z_source = 1/g_m) + exact solve
+    design5.py         bias design: target currents/voltages -> resistors and W/L of mirror outputs
+    ampdesign5.py      amplifier design with the procedure of Sample Problem 5 (CS + mirror-biased follower)
+    thev5.py           Thevenin march of ladder networks hanging on a transistor terminal (DC and AC)
+    draw_thev5.py      schematics of the Thevenin set (networks drawn as ladders)
+    narrative5.py, narrative_design5.py, narrative_amp5.py, narrative_thev5.py   card and solution writers
+    problems_5a..5f.py the 18 problems of each set
+    build.py           builds everything
+    tex/               generated LaTeX + compiled PDF
 output/lecture<N>/<set>/  generated figures (.pdf for LaTeX, .png preview)
 ```
 
@@ -61,6 +74,9 @@ Sets:
   design, 3D diode small-signal analysis.
 - Lecture 4: 4A BJT DC bias analysis, 4B current-mirror biasing, 4C DC bias design, 4D small-signal transfer
   functions of BJT amplifiers, 4E amplifier design (specification table -> all resistors).
+- Lecture 5: 5A MOSFET DC bias analysis, 5B current-mirror biasing, 5C bias design (resistors and W/L),
+  5D small-signal transfer functions, 5E amplifier design (Sample Problem 5 procedure), 5F circuits that call for a
+  Thevenin equivalent (DC and AC).
 
 ## Build
 
@@ -71,6 +87,7 @@ python -m lecture1.build              # all sets, or e.g. python -m lecture1.bui
 python -m lecture2.build              # all sets, or e.g. python -m lecture2.build 2B
 python -m lecture3.build              # all sets, or e.g. python -m lecture3.build 3C
 python -m lecture4.build              # all sets, or e.g. python -m lecture4.build 4C 4E
+python -m lecture5.build              # all sets, or e.g. python -m lecture5.build 5F
 python -m lecture2.build --no-pdf     # skip the pdflatex step (any lecture)
 ```
 
@@ -98,3 +115,11 @@ Lecture 4: a circuit is a list of columns, e.g.
 [vre('R4'), idiv('R2', I, ...)], vce_min, idc_max)`. 4E: `AmpSpec(level, ('pnp', 'npn', 'F'), V_CC, V_o, |A_v|, R_i,
 rl=..., thd=..., vo_d=..., n=..., vre=(...), av_mid=(...))`. Every design is re-analysed exactly (finite beta) during
 the build and must meet its specifications.
+
+Lecture 5: the same column circuits with `M(name, 'nmos'|'pmos', gate=..., kw=k'W/L, vt=|V_t|)` (or `kp=k', wl=(W, L)`
+for mirrors; `diode=True` for diode-connected). 5A/5B: `DCProb(level, build)`. 5C: `MosDesign(level, build(values),
+{M: I_D}, {node: V}, [vr('R4', 1.0), ir('R2', I), rpar('R1', 'R2', R_i)])`, with `size=True` on transistors whose W is
+designed. 5D: `ACProb(level, build, Sine(...))` with stages `Stage(q, 'CS'|'CD'|'CG')`. 5E: `AmpSpec5(level,
+'p'|'n'|'p1'|'n1', V_DD, V_SS, V_o, |A_v|, R_i, rl=..., thd=..., id3=...)`. 5F: `TProb(level, [TDev(q, gate, source,
+drain)], ac=...)` where each terminal gets a `Ladder(terminal, [Node(name, [Sh(z, supply|0|'vi')]), Ser(z), ...])`.
+Every DC answer is checked against a full nodal solve, every AC answer against an exact small-signal solve.
